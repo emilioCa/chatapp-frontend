@@ -9,19 +9,34 @@ const RegisterPage = () => {
 			</span>
 
             <div className="wrap-input100 validate-input mb-3">
-                <input className="input100" type="text" name="name" placeholder="Nombre" />
+                <input
+                    className="input100"
+                    type="text"
+                    name="name"
+                    placeholder="Nombre"
+                />
                 <span className="focus-input100"></span>
             </div>
 
 
             <div className="wrap-input100 validate-input mb-3">
-                <input className="input100" type="email" name="email" placeholder="Email" />
+                <input
+                    className="input100"
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                />
                 <span className="focus-input100"></span>
             </div>
 
 
             <div className="wrap-input100 validate-input mb-3">
-                <input className="input100" type="password" name="password" placeholder="Password" />
+                <input
+                    className="input100"
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                />
                 <span className="focus-input100"></span>
             </div>
 
