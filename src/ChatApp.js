@@ -7,11 +7,13 @@ import AppRouter from './router/AppRouter';
 const ChatApp = () => {
   return (
     <AuthProvider>
-      <SnackbarProvider>
-        <LayoutProvider>
-          <AppRouter />
-        </LayoutProvider>
-      </SnackbarProvider>
+      <SocketProvider>
+        <SnackbarProvider>
+          <LayoutProvider>
+            <AppRouter />
+          </LayoutProvider>
+        </SnackbarProvider>
+      </SocketProvider>
     </AuthProvider>
   );
 }
