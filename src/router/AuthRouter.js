@@ -12,10 +12,10 @@ const AuthRouter = () => {
             <div className="container-login100">
                 <div className="wrap-login100 p-t-50 p-b-90">
                     <Switch>
-                        <Route exact path="/auth/login" component={LoginPage} />
+                        <Route exact path="/auth/" component={LoginPage} />
                         <Route exact path="/auth/register" component={RegisterPage} />
 
-                        <Redirect to="/auth/login" />
+                        <Redirect to="/auth/" />
                     </Switch >
                 </div>
             </div>

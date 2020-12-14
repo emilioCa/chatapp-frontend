@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import * as Yup from 'yup';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { AuthContext } from '../../auth/AuthContext';
-import { useSnackbar } from 'react-simple-snackbar';
-// import { getSnackOptions } from '../../utils/getSnackOptions';
 
 const initialLoginState = {
     email: 'test1@gmail.com',
@@ -10,11 +10,20 @@ const initialLoginState = {
     rememberme: false,
 }
 
+const loginFormSchema = Yup.object().shape({
+    email: Yup.string()
+        .required('Email is required')
+        .email('Please verify your email')
+        .max(100, 'Email exceeds the limit'),
+    password: Yup.string()
+        .required('Password is required')
+        .max(100, 'Password exceeds the limit')
+});
+
 const LoginPage = () => {
     const { login } = useContext(AuthContext);
-    const [open] = useSnackbar();
 
-    const [form, setForm] = useState(initialLoginState);
+    const [rememberme, setRememberme] = useState(false);
     const [showPass, setShowPass] = useState('password');
 
     useEffect(() => {
@@ -22,102 +31,112 @@ const LoginPage = () => {
         (email) && setForm((form) => ({ ...form, email, rememberme: true }))
     }, []);
 
-    const onChangeInput = ({ target }) => {
-        const { name, value } = target;
-        setForm({ ...form, [name]: value });
-    }
-
-    const toggleRemember = () => {
-        setForm({ ...form, rememberme: !form.rememberme });
-    }
+    // const toggleRemember = () => {
+    //     setForm({ ...form, rememberme: !form.rememberme });
+    // }
 
     const togglePassword = () => {
         setShowPass((showPass === 'password') ? 'text' : 'password');
     }
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (values) => {
+        // (values.rememberme)
+        //     ? localStorage.setItem('email', values.email)
+        //     : localStorage.removeItem(values.email)
 
-        (form.rememberme)
-            ? localStorage.setItem('email', form.email)
-            : localStorage.removeItem(form.email)
-
-        const loginCheck = await login(form.email, form.password);
-
-        if (loginCheck) {
-            open('Bienvenido')
-        } else {
-            open('Credenciales inválidas. Verifique su usuario o contraseña')
-        }
+        await login(values.email, values.password);
     }
 
     return (
-        <form
+        <Formik
+            initialValues={initialLoginState}
+            validationSchema={loginFormSchema}
             onSubmit={onSubmit}
-            className="login100-form validate-form flex-sb flex-w"
         >
-            <span className="login100-form-title mb-3">
-                Login
+            {({
+                handleBlur,
+                handleChange,
+                values
+            }) => (
+                    <Form
+                        className="login100-form validate-form flex-sb flex-w"
+                    >
+                        <span className="login100-form-title mb-3">
+                            Login
 			</span>
 
-            <div className="wrap-input100 validate-input mb-3">
-                <input
-                    className="input100"
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={onChangeInput}
-                />
-                <span className="focus-input100"></span>
-            </div>
+                        <div className="wrap-input100 validate-input mb-3">
+                            <Field
+                                className="input100"
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                            />
+                            <span className="focus-input100"></span>
+                            <ErrorMessage
+                                name="email"
+                                component="div"
+                                className="alert-validate"
+                            />
+                        </div>
 
-            <div className="wrap-input100 validate-input mb-3">
-                <input
-                    className="input100"
-                    type={showPass}
-                    name="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={onChangeInput}
-                />
-                <span className="focus-input100"></span>
-                <span className="show-hide" onClick={togglePassword}>
-                    <i className={`fas fa-eye${(showPass !== 'password') ? '-slash' : ''}`}></i>
-                </span>
-            </div>
+                        <div className="wrap-input100 validate-input mb-3">
+                            <Field
+                                className="input100"
+                                type={showPass}
+                                name="password"
+                                placeholder="Password"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                            />
+                            <span className="focus-input100"></span>
+                            <span className="show-hide" onClick={togglePassword}>
+                                <i className={`fas fa-eye${(showPass !== 'password') ? '-slash' : ''}`}></i>
+                            </span>
+                            <ErrorMessage
+                                name="password"
+                                component="div"
+                                className="alert-validate"
+                            />
+                        </div>
 
-            <div className="row mb-3">
-                <div className="col" onClick={toggleRemember}>
-                    <input
-                        className="input-checkbox100"
-                        id="ckb1"
-                        type="checkbox"
-                        name="rememberme"
-                        checked={form.rememberme}
-                        readOnly
-                    />
-                    <label className="label-checkbox100">
-                        Rememberme
-					</label>
-                </div>
+                        <div className="row mb-3">
+                            <div className="col">
+                                <Field
+                                    className="input-checkbox100"
+                                    id="ckb1"
+                                    type="checkbox"
+                                    name="rememberme"
+                                    checked={values.rememberme}
+                                    onChange={handleChange}
+                                //checked={formValues.rememberme}
+                                // readOnly
+                                />
+                                <label className="label-checkbox100">
+                                    Rememberme {`${values.rememberme}`}
+                                </label>
+                            </div>
 
-                <div className="col text-right">
-                    <Link to="/auth/register" className="txt1">
-                        Create Account
+                            <div className="col text-right">
+                                <Link to="/auth/register" className="txt1">
+                                    Create Account
                     </Link>
-                </div>
-            </div>
+                            </div>
+                        </div>
 
-            <div className="container-login100-form-btn m-t-17" >
-                <button
-                    type="submit"
-                    className="login100-form-btn"
-                >
-                    Login
+                        <div className="container-login100-form-btn m-t-17" >
+                            <button
+                                type="submit"
+                                className="login100-form-btn"
+                            >
+                                Login
 				</button>
-            </div>
-        </form>
+                        </div>
+                    </Form>
+                )}
+        </Formik>
     )
 }
 
